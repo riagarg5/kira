@@ -1,40 +1,52 @@
 package com.practo.kira;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+
+import android.view.View;
+import android.os.Bundle;
+import android.app.Activity;
+import android.widget.Button;
+import android.content.Intent;
+import android.widget.EditText;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+
+public class MainActivity extends Activity
+{
+    String e, p;
+    Button submit;
+    EditText email;
+    Context context;
+    EditText password;
+    SharedPreferences sp;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this,DoctorScheduleActivity.class);
-        startActivity(intent);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+        context = this;
+        sp = getSharedPreferences("User", context.MODE_PRIVATE);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        submit = (Button)findViewById(R.id.button);
+        email = (EditText)findViewById(R.id.editText2);
+        password = (EditText)findViewById(R.id.editText);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        e = email.getText().toString();
+        p = password.getText().toString();
 
-        return super.onOptionsItemSelected(item);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("email", e);
+        editor.putString("password", p);
+        editor.commit();
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DoctorScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
