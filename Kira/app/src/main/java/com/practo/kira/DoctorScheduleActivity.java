@@ -72,6 +72,7 @@ public class DoctorScheduleActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_doctor_schedule, menu);
+
         return true;
     }
 
@@ -143,6 +144,10 @@ public class DoctorScheduleActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.google_accounts) {
+
         }
 
         return super.onOptionsItemSelected(item);
