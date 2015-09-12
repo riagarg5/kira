@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 
 public class SplashScreen extends Activity
@@ -27,10 +28,12 @@ public class SplashScreen extends Activity
 
                 if(sp.contains("email"))
                 {
+                    Log.d("here", sp.getString("email", null));
                     Intent intent=new Intent(SplashScreen.this,DoctorScheduleActivity.class);
                     SplashScreen.this.startActivity(intent);
 
                 } else {
+                    Log.d("hereeee", "thereee");
                     Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                     SplashScreen.this.startActivity(intent);
                 }
