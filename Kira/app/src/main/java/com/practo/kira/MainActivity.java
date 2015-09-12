@@ -58,18 +58,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         setSupportActionBar(mToolbar);
 
-        e = email.getText().toString();
-        p = password.getText().toString();
 
-        if ( e.indexOf('@') > 0) {
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("email", e);
-            editor.putString("password", p);
-            editor.commit();
-        }
 
         submit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                e = email.getText().toString();
+                p = password.getText().toString();
+
+                if ( e.indexOf('@') > 0) {
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("email", e);
+                    editor.putString("password", p);
+                    editor.commit();
+                }
                 Intent intent = new Intent(MainActivity.this, DoctorScheduleActivity.class);
                 startActivity(intent);
             }

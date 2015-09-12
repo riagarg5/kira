@@ -11,15 +11,26 @@
         android:minHeight="40dp"
         android:minWidth="40dp"
         android:src="@drawable/source_image" />
-
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Mr. Ghazi Ahmed"
-        android:id="@+id/textView"
-        android:layout_weight="0.23"
-        android:textColor="@android:color/tertiary_text_dark" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Mr. Ghazi Ahmed"
+            android:id="@+id/textView"
+            android:textColor="@android:color/tertiary_text_dark" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="12:39 PM"
+            android:textColor="@android:color/tertiary_text_dark"/>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,5 +39,5 @@
         android:text="More"
         android:textColor="#02a6d8"
         android:id="@+id/detail_view"
-        android:layout_gravity="bottom|right" />
+        android:layout_gravity="bottom" />
 </LinearLayout>

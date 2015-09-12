@@ -1,9 +1,13 @@
 package com.practo.kira;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +20,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -38,15 +55,64 @@ public class DoctorScheduleActivity extends AppCompatActivity {
         mToolBar.setTitle("Schedule");
         setSupportActionBar(mToolBar);
       //  mToolBar.showOverflowMenu();
-        patient_object abc1 = new patient_object();
-        ArrayList<patient_object> abc = new ArrayList<patient_object>();
+        Schedule.fields abc1 = new Schedule.fields();
+        ArrayList<Schedule.fields> abc = new ArrayList<Schedule.fields>();
         abc.add(abc1);
         abc.add(abc1);
 
-        mScheduleAdaptor.setData(abc,true);
+        mScheduleAdaptor.setData(abc, true);
         mListView.setAdapter(mScheduleAdaptor);
         mScheduleAdaptor.notifyDataSetChanged();
         mSwipeDetector = new SwipeDetector();
+        String url="http://192.168.1.4:8000/command/?command=today";
+
+        CustomRequest request = new CustomRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject patient_object) {
+                JSONArray data = new JSONArray();
+
+                Log.v("SomeResponse",patient_object.toString());
+                try {
+                   data =  patient_object.getJSONArray("data");
+                }catch(JSONException e) {
+                    Log.v("error", "error");
+                }
+                int i;
+                JSONObject fields1 = new JSONObject();
+                for (i=0; i< data.length(); i++) {
+                    try {
+                        fields1 = data.getJSONObject(i);
+                        JSONObject fields = fields1.getJSONObject("fields");
+                        Schedule.fields obj = new Schedule.fields();
+                        obj.patient = fields.getString("patient");
+                        obj.cancelled = fields.getBoolean("cancelled");
+                        obj.cancelled_reason = fields.getString("cancelled_reason");
+                        obj.has_photo = fields.getBoolean("has_photo");
+                        obj.doctor = fields.getInt("doctor");
+                        obj.photourl = fields.getString("photo_url");
+                        obj.scheduled_at = fields.getString("scheduled_at");
+                        obj.scheduled_till = fields.getString("scheduled_till");
+                        obj.treatmentplans = fields.getString("treatmentPlanName");
+                        mScheduleAdaptor.add(obj);
+                        mScheduleAdaptor.notifyDataSetChanged();
+
+
+
+                    }catch ( JSONException e){
+
+                    }
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+
+        Volley.newRequestQueue(this).add(request);
 
         mListView.setOnTouchListener(mSwipeDetector);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -76,11 +142,11 @@ public class DoctorScheduleActivity extends AppCompatActivity {
         return true;
     }
 
-    class ScheduleAdaptor extends ArrayAdapter<patient_object> {
+    class ScheduleAdaptor extends ArrayAdapter<Schedule.fields> {
 
         private LayoutInflater mInflater;
         private Context context;
-        private ArrayList<patient_object> mValues = new ArrayList<patient_object>();
+        private ArrayList<Schedule.fields> mValues = new ArrayList<Schedule.fields>();
 
         public ScheduleAdaptor(Context context, int resource) {
             super(context, resource);
@@ -88,8 +154,13 @@ public class DoctorScheduleActivity extends AppCompatActivity {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
+        @Override
+        public void add(Schedule.fields object) {
+            super.add(object);
+            mValues.add(object);
+        }
 
-        public void setData(List<patient_object> data, boolean add) {
+        public void setData(List<Schedule.fields> data, boolean add) {
             if (!add) {
                 clear();
                 mValues.clear();
@@ -102,7 +173,7 @@ public class DoctorScheduleActivity extends AppCompatActivity {
 
                 } else {
                     if (data != null) {
-                        for (patient_object patient : data) {
+                        for (Schedule.fields patient : data) {
                             add(patient);
                         }
                     }
@@ -125,7 +196,21 @@ public class DoctorScheduleActivity extends AppCompatActivity {
             }
 
 
-            patient_object facility = getItem(position);
+            final Schedule.fields facility = getItem(position);
+            TextView detail_view = (TextView) convertView.findViewById(R.id.detail_view);
+            TextView patient_name = (TextView) convertView.findViewById(R.id.textView);
+            if(!TextUtils.isEmpty(facility.patient))
+            patient_name.setText(facility.patient);
+            detail_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), DetailView.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("patient_data", facility);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
 
             return convertView;
         }
